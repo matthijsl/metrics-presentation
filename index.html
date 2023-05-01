@@ -1,104 +1,183 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>Metrics met Prometheus & Grafana</title>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<link rel="stylesheet" href="dist/reset.css">
-		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css">
+	<title>Metrics met Prometheus & Grafana</title>
 
-		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="plugin/highlight/monokai.css">
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>
-					<h1 class="">Metrics met Prometheus & Grafana</h1>
-					<p>
-						en een beetje C# en alerting.
-					</p>
-				</section>
-				<section></section>
-				<section data-background="https://s3-us-east-2.amazonaws.com/maryville/wp-content/uploads/2020/11/06165041/video-game-developer.jpg">
-					<p>
-						maak kennis met
-					</p>
-					<h2 class="r-fit-text">Sanne</h2>
-					<aside class="notes">
-						Sanne is een developer net als velen van ons en we volgen de reis van Sanne vandaag.
-						We beginnen met een kijkje in het hoofd van Sanne.
-					</aside>
-				</section>
-				<section data-background="https://media.nu.nl/m/3h9x07naquds_wd1280.jpg/fabeltjeskrant-50-jaar-zo-klonk-meneer-de-uil-in-het-buitenland">
+	<link rel="stylesheet" href="dist/reset.css">
+	<link rel="stylesheet" href="dist/reveal.css">
+	<link rel="stylesheet" href="dist/theme/black.css">
+
+	<!-- Theme used for syntax highlighted code -->
+	<link rel="stylesheet" href="plugin/highlight/monokai.css">
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section>
+				<h1 class="">Metrics met Prometheus & Grafana</h1>
+				<p>
+					en een beetje C# en alerting.
+				</p>
+			</section>
+			<section></section>
+			<section
+				data-background="https://media.nu.nl/m/3h9x07naquds_wd1280.jpg/fabeltjeskrant-50-jaar-zo-klonk-meneer-de-uil-in-het-buitenland">
+				<aside class="notes">
+					Tijd voor een verhaaltje
+				</aside>
+			</section>
+			<section>
+				<h2 class="r-fit-text">Er was eens...</h2>
+				<p class="fragment fade-left">Een klant met een goed idee</p>
+				<p class="fragment fade-in">Er werd vrolijk er getypt en zo geschiede...</p>
+				<p class="fragment fade-right">...en men zag dat het goed was.</p>
+			</section>
+			<section>
+				<p>Dit is hoe het voelt</p>
+				<iframe class="r-fit-text" src="https://giphy.com/embed/edMmLXyJd8dbkqiQTP" width="480" height="360"
+					frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+			</section>
+			<section data-background="https://gdocservices.com/wp-content/uploads/2019/09/AdobeStock_275018160.jpeg">
+				<h1 style="background-color: rgba(0,0,0,0.4); color: #fff;">En toen begonnen de problemen zich op te
+					stapelen</h1>
+			</section>
+			<section>
+				<h2>Probleem #0</h2>
+				<p class="r-fit-text fragment fade-in">
+					"Ik heb een applicatie gemaakt"
+				</p>
+			</section>
+			<section>
+				<h2>Probleem #1</h2>
+				<p class="r-fit-text fragment fade-in">
+					"Ik heb een applicatie gedeployed naar de <strong class="white">Cloud</strong>"
+				</p>
+			</section>
+			<section>
+				<h2>Probleem #2</h2>
+				<p class="fragment fade-up">
+					"De applicatie heeft gebruikers!"
+				</p>
+				<iframe class="fragment fade-down" src="https://giphy.com/embed/NaQpmeX7lEjMA" width="480" height="270"
+					frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+			</section>
+			<section>
+				<h2>Probleem #3</h2>
+				<p class="fragment fade-up">
+					Cloud computing is duur en dus wil je niet te veel en niet te weinig resources gebruiken.</p>
+			</section>
+			<section>
+				<h2>Probleem #4</h2>
+				<p class="fragment fade-up">
+					De product owner wil graag weten op welke momenten in de week gebruikers het meest gebruik maken van
+					jouw gloednieuwe functionaliteit.</p>
+			</section>
+			<section>
+				<h2>Probleem #5</h2>
+				<p class="fragment fade-up">
+					Ik heb een 3rd-party dienst waar de applicatie gebruik van maakt, hoe monitor ik die?!
+				</p>
+			</section>
+			<section>
+				<h1>...wat nu?</h1>
+			</section>
+			<section data-background-iframe="https://prometheus.io/">
+				<h1 class="custom-text-background r-fit-text" style="color:#fff">Metrics collection</h1>
+			</section>
+			<section data-background="images/grafana_home_page.png" data-background-size="contain">
+				<h1 class="custom-text-background r-fit-text" style="color:#fff">Visualisatie</h1>
+			</section>
+			<section>
+				<h2>Hands-on</h2>
+				<aside class="notes">
+					Ik ga stap voor stap door deze docker-compose om tot een gewenste situatie te komen waarbij we een oplossing vinden voor de problemen die we hebben.
+				</aside>
+				<pre><code data-trim data-noescape data-line-numbers="4-12|14-17|19-26|28-35|37-42|45-57">
+					version: '3.9'
+
+					services:
+					  prometheus:
+						  image: prom/prometheus
+						  ports:
+						    - "3000:9090"
+						  volumes:
+						    - .:/etc/prometheus
+						  command:
+						    - "--config.file=/etc/prometheus/prometheus.yml"
+						    - "--web.config.file=/etc/prometheus/web.yml"
 					
-					<aside class="notes">
-						Tijd voor een verhaaltje
-					</aside>
-				</section>
-				<section>
-					<h2 class="r-fit-text">Er was eens...</h2>
-					<p class="fragment fade-left">Een klant met een goed idee</p>
-					<p class="fragment fade-in">Er werd vrolijk er getypt en zo geschiede...</p>
-					<p class="fragment fade-right">...en men zag dat het goed was.</p>
-				</section>
-				<section>
-					<p>Dit is hoe het voelt</p>
-					<iframe class="r-fit-text" src="https://giphy.com/embed/edMmLXyJd8dbkqiQTP" width="480" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
-				</section>
-				<section data-background="https://gdocservices.com/wp-content/uploads/2019/09/AdobeStock_275018160.jpeg">
-					<h1 style="background-color: rgba(0,0,0,0.4); color: #fff;">En toen begonnen de problemen zich op te stapelen</h1>
-				</section>
-				<section>
-					<h2>Probleem #0</h2>
-					<p class="r-fit-text fragment fade-in">
-						"Ik heb een applicatie gemaakt"
-					</p>
-				</section>
-				<section>
-					<h2>Probleem #1</h2>
-					<p class="r-fit-text fragment fade-in">
-						"Ik heb een applicatie gedeployed naar de <strong class="white">Cloud</strong>"
-					</p>
-				</section>
-				<section>
-					<h2>Probleem #2</h2>
-					<p class="fragment fade-up">
-						"De applicatie heeft gebruikers!"
-					</p>
-					<iframe class="fragment fade-down" src="https://giphy.com/embed/NaQpmeX7lEjMA" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
-				</section>
-				<section>
-					<h2>Probleem #3</h2>
-					<p class="fragment fade-up">
-						Cloud computing is duur en dus wil je niet te veel en niet te weinig resources gebruiken.</p>
-				</section>
-				<section>
-					<h2>Probleem #4</h2>
-					<p class="fragment fade-up">
-						De product owner wil graag weten op welke momenten in de week gebruikers het meest gebruik maken van jouw gloednieuwe functionaliteit.</p>
-				</section>
-			</div>
-			<div style="position:fixed;bottom:20px; right:150px;color: gray; z-index: 1000; font-size: 0.6rem; ">Matthijs Liethof - 2023</div>
-		</div>
+					  grafana:
+						  image: grafana/grafana
+						  ports:
+						    - "3001:3000"
+					
+					  alertmanager:
+						  image: quay.io/prometheus/alertmanager
+						  ports:
+						    - "3004:9093"
+						  volumes:
+						    - .:/config
+						  command:
+						    - "--config.file=/config/alertmanager/alertmanager.yml"
+					
+					  blackbox:
+						  image: quay.io/prometheus/blackbox-exporter
+						  ports:
+						    - "3003:9115"
+						  volumes:
+						    - .:/config
+						  command:
+						    - "--config.file=/config/blackbox/blackbox.yml"
+					
+					  dotnet:
+						  build:
+						    context: ./dotnet-7-0
+						    dockerfile: ./Dockerfile
+						  ports:
+						    - "3002:80"
+					
+					
+					### Demo purposes
+					  httpecho:
+						   image: hashicorp/http-echo
+						   ports:
+						     - "3005:5678"
+						   command:
+							  - "-text=hello world"
+					
+					  smtp4dev:
+						  image: rnwood/smtp4dev
+						  ports:
+						    - "3005:80"
+						    - "2525:25"
+					  </code></pre>
 
-		<script src="dist/reveal.js"></script>
-		<script src="plugin/notes/notes.js"></script>
-		<script src="plugin/markdown/markdown.js"></script>
-		<script src="plugin/highlight/highlight.js"></script>
-		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
-				slideNumber:true,
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
-			});
-		</script>
-	</body>
+			</section>
+		</div>
+		<div style="position:fixed;bottom:20px; right:150px;color: gray; z-index: 1000; font-size: 0.6rem; ">Matthijs
+			Liethof - 2023</div>
+	</div>
+
+	<script src="dist/reveal.js"></script>
+	<script src="plugin/notes/notes.js"></script>
+	<script src="plugin/markdown/markdown.js"></script>
+	<script src="plugin/highlight/highlight.js"></script>
+	<script>
+		// More info about initialization & config:
+		// - https://revealjs.com/initialization/
+		// - https://revealjs.com/config/
+		Reveal.initialize({
+			hash: true,
+			slideNumber: true,
+			// Learn about plugins: https://revealjs.com/plugins/
+			plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+		});
+	</script>
+</body>
+
 </html>
